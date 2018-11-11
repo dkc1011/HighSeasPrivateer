@@ -1,3 +1,5 @@
+//GameManager.java by Daragh Carroll t00201097
+
 import javax.swing.*;
 
 public class GameManager {

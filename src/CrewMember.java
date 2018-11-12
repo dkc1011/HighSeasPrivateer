@@ -2,7 +2,24 @@
 
 public class CrewMember {
     private String name;
+    /*
+    Health indicates how badly sick or injured a crewmember is
+    5 = Perfectly Healthy
+    4 = Slightly Unwell
+    3 = Poorly
+    2 = Badly Injured / Very Sick
+    1 = Near-death
+    0 = Dead
+    */
     private int health;
+    /*
+    Status indicates whether a crewmember is Healthy, Sick, Injured or Dead.
+    'H' = Healthy
+    'I' = Injured
+    'S' = Sick
+    'D' = Deceased
+    */
+    private char status;
 
 
     public void setName(String name)
@@ -15,7 +32,12 @@ public class CrewMember {
     {
         this.health = health;
     }//End setHealth()
-
+    
+    
+    public void setStatus(char status)
+    {
+        this.status = status;
+    }//End setStatus
 
     public String getName()
     {
@@ -34,7 +56,7 @@ public class CrewMember {
     public CrewMember()
     {
         name = "Unknown";
-        health = 10;
+        health = 5;
     }//End No Args Constructor
 
 

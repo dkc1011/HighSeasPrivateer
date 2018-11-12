@@ -3,21 +3,48 @@
 import javax.swing.*;
 
 public class Crew {
-    CrewMember[] crewMembers = new CrewMember[5];
+    CrewMember[] crew = new CrewMember[5];
     private int money;
     private int shipHealth;
+    CargoItem[] cargo = new CargoItem[13];
 
     public void createCrew()
     {
-        crewMembers[0].setName(JOptionPane.showInputDialog("Please enter the name of your Captain: "));
-        crewMembers[0].setHealth(10);
-
-        for(int i = 1; i<5; i++)
+        CrewMember captain = new CrewMember();
+        captain.setName(JOptionPane.showInputDialog("Please enter the name of your Captain: "));
+        captain.setHealth(5);
+        captain.setStatus('H');
+        crew[0] = captain;
+        for(int i = 1; i<crew.length; i++)
         {
-            crewMembers[i].setName(JOptionPane.showInputDialog("Please enter the name of crew member " + i + ":"));
+            CrewMember crewMember = new CrewMember();
+            crewMember.setName(JOptionPane.showInputDialog("Please enter the name of crew member " + i + ":"));
+            crewMember.setHealth(5);
+            crewMember.setStatus('H');
+            crew[i] = crewMember;
         } //End For
+
+        //Initializes all of the different cargo a crew can have
+        cargo[0] = new CargoItem("Food", 0, 2);
+        cargo[1] = new CargoItem("Timber", 0, 15);
+        cargo[2] = new CargoItem("Rum", 0, 4);
+        cargo[3] = new CargoItem("Fabric", 0, 8);
+        cargo[4] = new CargoItem("Guns", 0,15);
+        cargo[5] = new CargoItem("Ammunition", 0,2);
+        cargo[6] = new CargoItem("Coffee Beans", 0, 2);
+        cargo[7] = new CargoItem("Tea Leaves", 0, 2);
+        cargo[8] = new CargoItem("Canons", 0, 100);
+        cargo[9] = new CargoItem("Canon balls", 0, 25);
+        cargo[10] = new CargoItem("Silk", 0, 20);
+        cargo[11] = new CargoItem("Opium",0,50);
+        cargo[12] = new CargoItem("Tobacco", 0, 10);
     }//End createCrew()
 
+
+    public void alterCargoQuantity(int cargoIndex, int newQuantity)
+    {
+        cargo[cargoIndex].setQuantity(newQuantity);
+    }
 
     public void setMoney(int money)
     {

@@ -4,20 +4,25 @@ import javax.swing.*;
 
 public class GameManager {
     public static char difficulty = 'd';
-    public Crew playerCrew = new Crew();
+    public static Crew playerCrew = new Crew();
 
     public static void main(String[] args) {
-        char choice = JOptionPane.showInputDialog("~~~High Seas Privateer~~~\n1.Start\n2.Exit").charAt(0);
-        
+        //d for default
+        char choice = 'd';
+
         do
         {
+            choice = JOptionPane.showInputDialog("~~~High Seas Privateer~~~\n1.Start\n2.Exit").charAt(0);
+
             switch (choice)
             {
                 case '1':
                     selectDifficulty();
+                    break;
                     
                 default :
                     JOptionPane.showMessageDialog(null,"Please enter another option!","High Seas Privateer", JOptionPane.ERROR_MESSAGE);
+                    break;
             }
         }while(choice != '2');
         
@@ -61,7 +66,7 @@ public class GameManager {
     
     private static void startGame()
     {
-        
+        Town.enterTown();
     }
     
 }

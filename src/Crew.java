@@ -6,6 +6,7 @@ public class Crew {
     CrewMember[] crew = new CrewMember[5];
     private int money;
     private int shipHealth;
+    private int distanceTravelled;
     CargoItem[] cargo = new CargoItem[13];
 
     public void createCrew()
@@ -51,6 +52,9 @@ public class Crew {
         this.money = money;
     }//End setMoney()
 
+    public void setDistanceTravelled(int distanceTravelled) {
+        this.distanceTravelled = distanceTravelled;
+    }
 
     public int getMoney()
     {
@@ -69,13 +73,17 @@ public class Crew {
         return this.shipHealth;
     }//end getShipHealth()
 
+    public int getDistanceTravelled() {
+        return distanceTravelled;
+    }
+
     //Constructors
 
     //No Args Constructor
     public Crew()
     {
         setMoney(0);
-        setShipHealth(100);
+        setShipHealth(10);
     }//End No Args Constructor
 
 

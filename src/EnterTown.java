@@ -18,13 +18,38 @@ public class EnterTown {
         public static void enterTown(int townIndex)
         {
             nextTown += 1;
-            char option = JOptionPane.showInputDialog("You lay down your anchor at " + towns[townIndex].getTownName() + ". The docks are bustling with activity." +
-                    "\nWhat would you like to do? : \n1. Trade for goods\n2. Ask around for tips\n3. Inspect your crew\n4. Leave").charAt(0);
+            char option = 'd';
 
-            if (option == '4')
-            {
-                GameManager.travelling();
-            }
+            do {
+
+
+                option = JOptionPane.showInputDialog("You lay down your anchor at " + towns[townIndex].getTownName() + ". The docks are bustling with activity." +
+                        "\nWhat would you like to do? : \n1. Trade for goods\n2. Ask around for tips\n3. Inspect your crew\n4. Leave").charAt(0);
+
+                if(option == '1')
+                {
+                    tradeGoods();
+                }
+                else if(option == '2')
+                {
+                    //Conversations
+                    System.out.println("Conversation");
+                }
+                else if(option == '3')
+                {
+                    //CrewScreen
+                    System.out.println("Your Crew");
+                }
+                else if (option == '4') {
+                    GameManager.travelling();
+                }
+                else
+                {
+                    option = 'd';
+                    System.out.println("Try again cunt");
+                }
+
+            }while (option == 'd');
         }//End enterTown()
 
         private static String generateTownName()
@@ -169,5 +194,9 @@ public class EnterTown {
             return affix;
         }//End selectAffix()
 
+        private static void tradeGoods()
+        {
+            System.out.println("Trading");
+        }
 }
 

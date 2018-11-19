@@ -15,8 +15,6 @@ public class CrewMember {
     /*
     Status indicates whether a crewmember is Healthy, Sick, Injured or Dead.
     'H' = Healthy
-    'I' = Injured
-    'S' = Sick
     'D' = Deceased
     */
     private char status;
@@ -57,14 +55,16 @@ public class CrewMember {
     {
         name = "Unknown";
         health = 5;
+        status = 'H';
     }//End No Args Constructor
 
 
     //Two Args Constructor
-    public CrewMember(String name, int health)
+    public CrewMember(String name, int health, char status)
     {
         setName(name);
         setHealth(health);
+        setStatus(status);
     }//End Two Args Constructor
 
 

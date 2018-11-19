@@ -17,23 +17,22 @@ public class EnterTown {
 
         public static void enterTown(int townIndex)
         {
-            nextTown += 1;
             char option = 'd';
 
             do {
-
-
                 option = JOptionPane.showInputDialog("You lay down your anchor at " + towns[townIndex].getTownName() + ". The docks are bustling with activity." +
-                        "\nWhat would you like to do? : \n1. Trade for goods\n2. Ask around for tips\n3. Inspect your crew\n4. Leave").charAt(0);
+                        "\nWhat would you like to do? : \n1. Trade for goods\n2. Inspect your cargo\n3. Inspect your crew\n4. Leave").charAt(0);
 
                 if(option == '1')
                 {
-                    tradeGoods();
+                    enterTrader();
                 }
                 else if(option == '2')
                 {
-                    //Conversations
-                    System.out.println("Conversation");
+                    JTextArea ledger = new JTextArea();
+                    ledger.append(GameManager.playerCrew.inspectCargo());
+
+                    JOptionPane.showMessageDialog(null, ledger,"Inspect Cargo",JOptionPane.PLAIN_MESSAGE);
                 }
                 else if(option == '3')
                 {
@@ -41,12 +40,12 @@ public class EnterTown {
                     System.out.println("Your Crew");
                 }
                 else if (option == '4') {
-                    GameManager.travelling();
+                    nextTown++;
                 }
                 else
                 {
                     option = 'd';
-                    System.out.println("Try again cunt");
+                    System.out.println("Try again");
                 }
 
             }while (option == 'd');
@@ -194,9 +193,46 @@ public class EnterTown {
             return affix;
         }//End selectAffix()
 
-        private static void tradeGoods()
+        private static void enterTrader()
         {
-            System.out.println("Trading");
+            char choice = 'd';
+
+            do
+            {
+                choice = JOptionPane.showInputDialog("The Shopkeeper greets you -- \n\n \"Welcome to my store! are you buying or selling sailor?\"\n\n1.Buy goods\n2.Sell goods\n3.Leave store").charAt(0);
+
+                switch (choice)
+                {
+                    case '1':
+                        buyingGoods();
+                        break;
+
+                    case '2':
+                        sellingGoods();
+                        break;
+
+                    case '3':
+                        enterTown(nextTown);
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null,"Please enter a valid option!","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                        choice='d';
+                        break;
+                }
+            }while (choice == 'd');
         }
+
+        private static void buyingGoods()
+        {
+
+        }
+
+        private static void sellingGoods()
+        {
+
+        }
+
+
 }
 

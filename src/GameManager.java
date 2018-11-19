@@ -7,7 +7,9 @@ import java.util.TimerTask;
 public class GameManager {
     public static char difficulty = 'd';
     public static Crew playerCrew = new Crew();
-
+    private static int minMovespeed=2;
+    private static int maxMovespeed=4;
+    private static int dayCycle = 0;
     public static void main(String[] args) {
         //d for default
         char choice = 'd';
@@ -21,14 +23,16 @@ public class GameManager {
                 case '1':
                     selectDifficulty();
                     break;
-                    
+
+                case '2':
+                    System.exit(0);
+
                 default :
                     JOptionPane.showMessageDialog(null,"Please enter another option!","High Seas Privateer", JOptionPane.ERROR_MESSAGE);
+                    choice = 'd';
                     break;
             }
-        }while(choice != '2');
-        
-        System.exit(0);
+        }while(choice == 'd');
 
     }
 
@@ -78,9 +82,19 @@ public class GameManager {
         travelling();
     }
 
-    //Information source : https://stackoverflow.com/questions/17397259/how-to-do-an-action-in-periodic-intervals-in-java
+    //Information source for Timers -- : https://stackoverflow.com/questions/17397259/how-to-do-an-action-in-periodic-intervals-in-java
     public static void travelling()
     {
+        // Day / Night cycle code
+        String[] timeOfDayString = new String[5];
+
+
+        timeOfDayString[0] = "Morning";
+        timeOfDayString[1] = "Noon";
+        timeOfDayString[2] = "Afternoon";
+        timeOfDayString[3] = "Evening";
+        timeOfDayString[4] = "Night";
+
         Timer t = new Timer();
         t.schedule(new TimerTask() {
 
@@ -92,17 +106,42 @@ public class GameManager {
                 }
                 else
                 {
-                    playerCrew.setDistanceTravelled(playerCrew.getDistanceTravelled()+Event.randomIntegerGenerator(2, 4));
+                    if(dayCycle == 4)
+                    {
+                        minMovespeed = 1;
+                        maxMovespeed = 2;
+                    }
+                    else
+                    {
+                        minMovespeed = 2;
+                        maxMovespeed = 4;
+                    }
+
+
+                    playerCrew.setDistanceTravelled(playerCrew.getDistanceTravelled()+Event.randomIntegerGenerator(minMovespeed, maxMovespeed));
                     System.out.println("Distance Travelled: " + playerCrew.getDistanceTravelled() + " Nautical Miles");
                     EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(EnterTown.towns[EnterTown.nextTown].getDistanceFromStart() - playerCrew.getDistanceTravelled());
                     if(EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() < 0)
                     {
                         EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(0);
                     }
-                    System.out.println("Distance to next town: " + EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() + " Nautical Miles\n\n");
+
+                    System.out.println("Distance to next town: " + EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() + " Nautical Miles");
+
+                    System.out.println(timeOfDayString[dayCycle] + "\n\n");
+
+                    dayCycle++;
+
+                    Event.eventOccurs(Event.eventTrigger());
+
+                    if(dayCycle > 4)
+                    {
+                        dayCycle = 0;
+                    }
+
                 }
             }
-        }, 5000, 5000);
+        }, 3500, 3500);
     }//End Travelling
     
 }

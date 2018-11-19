@@ -54,4 +54,9 @@ public class CargoItem {
         setQuantity(quantity);
         setBasePrice(basePrice);
     }//End 3 Args Constructor
+
+    @Override
+    public String toString() {
+        return "Name of Cargo: " + getName() +"\nQuantity of Cargo: " + getQuantity();
+    }
 }

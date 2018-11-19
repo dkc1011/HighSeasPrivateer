@@ -7,7 +7,7 @@ public class Crew {
     private int money;
     private int shipHealth;
     private int distanceTravelled;
-    CargoItem[] cargo = new CargoItem[13];
+    CargoItem[] cargo = new CargoItem[14];
 
     public void createCrew()
     {
@@ -26,7 +26,7 @@ public class Crew {
         } //End For
 
         //Initializes all of the different cargo a crew can have
-        cargo[0] = new CargoItem("Food", 0, 2);
+        cargo[0] = new CargoItem("Food Rations", 0, 2);
         cargo[1] = new CargoItem("Timber", 0, 15);
         cargo[2] = new CargoItem("Rum", 0, 4);
         cargo[3] = new CargoItem("Fabric", 0, 8);
@@ -39,6 +39,7 @@ public class Crew {
         cargo[10] = new CargoItem("Silk", 0, 20);
         cargo[11] = new CargoItem("Opium",0,50);
         cargo[12] = new CargoItem("Tobacco", 0, 10);
+        cargo[13] = new CargoItem("Lemons", 0, 4);
     }//End createCrew()
 
 
@@ -93,4 +94,19 @@ public class Crew {
         setMoney(money);
         setShipHealth(shipHealth);
     }//End 2 Args Constructor
+
+    //Additional Methods
+
+    public String inspectCargo()
+    {
+        String cargoLedger = "";
+
+        for(int i = 0; i<14; i++)
+        {
+            cargoLedger += cargo[i].toString() + "\n\n";
+        }
+
+        return cargoLedger;
+    }
+
 }//End class

@@ -26,20 +26,20 @@ public class Crew {
         } //End For
 
         //Initializes all of the different cargo a crew can have
-        cargo[0] = new CargoItem("Food Rations", 0, 2);
-        cargo[1] = new CargoItem("Timber", 0, 15);
-        cargo[2] = new CargoItem("Rum", 0, 4);
-        cargo[3] = new CargoItem("Fabric", 0, 8);
-        cargo[4] = new CargoItem("Guns", 0,15);
-        cargo[5] = new CargoItem("Ammunition", 0,2);
-        cargo[6] = new CargoItem("Coffee Beans", 0, 2);
-        cargo[7] = new CargoItem("Tea Leaves", 0, 2);
-        cargo[8] = new CargoItem("Canons", 0, 100);
-        cargo[9] = new CargoItem("Canon balls", 0, 25);
-        cargo[10] = new CargoItem("Silk", 0, 20);
-        cargo[11] = new CargoItem("Opium",0,50);
-        cargo[12] = new CargoItem("Tobacco", 0, 10);
-        cargo[13] = new CargoItem("Lemons", 0, 4);
+        cargo[0] = new CargoItem("Food Rations", 0, 2, 0, 0);
+        cargo[1] = new CargoItem("Timber", 0, 20,0, 0);
+        cargo[2] = new CargoItem("Rum", 0, 6,0, 0);
+        cargo[3] = new CargoItem("Fabric", 0, 8,0, 0);
+        cargo[4] = new CargoItem("Guns", 0,19,0, 0);
+        cargo[5] = new CargoItem("Black Powder", 0,2,0, 0);
+        cargo[6] = new CargoItem("Coffee Beans", 0, 3, 0, 0);
+        cargo[7] = new CargoItem("Tea Leaves", 0, 3, 0, 0);
+        cargo[8] = new CargoItem("Canons", 0, 85, 0, 0);
+        cargo[9] = new CargoItem("Canon balls", 0, 18, 0, 0);
+        cargo[10] = new CargoItem("Silk", 0, 15, 0, 0);
+        cargo[11] = new CargoItem("Opium",0,30, 0, 0);
+        cargo[12] = new CargoItem("Tobacco", 0, 12, 0, 0);
+        cargo[13] = new CargoItem("Lemons", 0, 3, 0, 0);
     }//End createCrew()
 
 
@@ -101,7 +101,7 @@ public class Crew {
     {
         String cargoLedger = "";
 
-        for(int i = 0; i<14; i++)
+        for(int i = 0; i<cargo.length; i++)
         {
             cargoLedger += cargo[i].toString() + "\n\n";
         }

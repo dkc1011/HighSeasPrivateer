@@ -3,7 +3,7 @@ import javax.swing.*;
 public class EnterTown {
         public static Town[] towns = new Town[10];
         public static int nextTown = 0;
-
+        private static char buyingOrSelling = 'N';
         public static void generateTowns()
         {
             for(int i=0; i<towns.length; i++) {
@@ -11,6 +11,9 @@ public class EnterTown {
                 town.setTownName(generateTownName());
                 town.setDistanceFromStart(Event.randomIntegerGenerator(40,45) * i);
                 town.setDistanceFromPlayer(town.getDistanceFromStart() - GameManager.playerCrew.getDistanceTravelled());
+                town.generateMerchantStockNamesAndBasePrices();
+                town.generateMerchantQuantities();
+                town.generateMerchantPrices();
                 towns[i] = town;
             }
         }
@@ -199,17 +202,68 @@ public class EnterTown {
 
             do
             {
-                choice = JOptionPane.showInputDialog("The Shopkeeper greets you -- \n\n \"Welcome to my store! are you buying or selling sailor?\"\n\n1.Buy goods\n2.Sell goods\n3.Leave store").charAt(0);
+                choice = JOptionPane.showInputDialog("The Shopkeeper greets you -- \n\n \"Welcome to my store! are you buying or selling sailor?\"\n\n1.Buy goods\n2.Sell goods\n3.Leave store \n\nCaptain " + GameManager.playerCrew.crew[0].getName() + " has " + GameManager.playerCrew.getMoney() + " doubloons.").charAt(0);
 
                 switch (choice)
                 {
                     case '1':
-                        buyingGoods();
+
+                        char choice2 = 'd';
+                        buyingOrSelling = 'B';
+
+                        do
+                        {
+                            choice2 = JOptionPane.showInputDialog("\"So you're buyin'! I can show you my rates afore you make a decision!\"\n\n1.Select what you want to buy\n2.View rates\n3.Go back\n\nCaptain " + GameManager.playerCrew.crew[0].getName() + " has " + GameManager.playerCrew.getMoney() + " doubloons.").charAt(0);
+
+                            switch (choice2)
+                            {
+                                case '1':
+                                    buyingGoods();
+                                    break;
+
+                                case '2':
+                                    displayRates();
+                                    break;
+
+                                case '3':
+                                    enterTrader();
+                                    break;
+
+                                default:
+                                    JOptionPane.showMessageDialog(null,"Please enter a valid option!","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                                    choice2 ='d';
+                                    break;
+                            }
+                        }while (choice2 == 'd');
                         break;
 
                     case '2':
-                        sellingGoods();
-                        break;
+                        buyingOrSelling = 'S';
+
+                        do
+                        {
+                            choice2 = JOptionPane.showInputDialog("\"So you're Sellin'! I can show you my rates afore you make a decision!\"\n\n1.Select what you want to sell\n2.View rates\n3.Go back\n\nCaptain " + GameManager.playerCrew.crew[0].getName() + " has " + GameManager.playerCrew.getMoney() + " doubloons.").charAt(0);
+
+                            switch (choice2)
+                            {
+                                case '1':
+                                    sellingGoods();
+                                    break;
+
+                                case '2':
+                                    displayRates();
+                                    break;
+
+                                case '3':
+                                    enterTrader();
+                                    break;
+
+                                default:
+                                    JOptionPane.showMessageDialog(null,"Please enter a valid option!","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                                    choice2 ='d';
+                                    break;
+                            }
+                        }while (choice2 == 'd');
 
                     case '3':
                         enterTown(nextTown);
@@ -225,12 +279,108 @@ public class EnterTown {
 
         private static void buyingGoods()
         {
+            char valid = 'd', valid2 = 'd';
+            int buyingIndex;
 
+            do {
+                buyingIndex = Integer.parseInt(JOptionPane.showInputDialog("Input the item you would like to buy: \n1.Food Rations\n2.Timber\n3.Rum Barrels\n4.Fabric\n5.Guns\n6.Black Powder Keg\n7.Coffee Beans\n8.Tea Leaves"
+                        + "\n9.Canons\n10.Canon Balls\n11.Silk\n12.Opium\n13.Tobacco\n14.Lemons\n\n15.Go Back"));
+
+                if(buyingIndex > 0 && buyingIndex < 15)
+                {
+                    valid = 'v';
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null,"Please enter a valid option!","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid = 'd';
+                }
+            }while(valid == 'd');
+
+            do {
+                int buyingQuantity = Integer.parseInt(JOptionPane.showInputDialog("How many " + towns[nextTown].merchantStock[buyingIndex-1].getName() + " would you like to buy?"));
+
+                if(buyingQuantity > towns[nextTown].merchantStock[buyingIndex-1].getQuantity())
+                {
+                    JOptionPane.showMessageDialog(null,"The trader does not have enough " + towns[nextTown].merchantStock[buyingIndex-1].getName() + " to sell to you! Please input a different quantity.","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid2 = 'd';
+                }
+                else if(buyingQuantity <= 0)
+                {
+                    JOptionPane.showMessageDialog(null,"Quantity must be a positive number, please enter a different quantity","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid2 = 'd';
+                }
+                else if(GameManager.playerCrew.getMoney() < towns[nextTown].merchantStock[buyingIndex-1].getMerchantBuyPrice() * buyingQuantity)
+                {
+                    JOptionPane.showMessageDialog(null,"You do not have enough doubloons to pay for this many " + towns[nextTown].merchantStock[buyingIndex-1].getName(),"Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid2 = 'd';
+                }
+                else
+                {
+                    GameManager.playerCrew.setMoney(GameManager.playerCrew.getMoney() - towns[nextTown].merchantStock[buyingIndex-1].getMerchantBuyPrice() * buyingQuantity);
+                    GameManager.playerCrew.alterCargoQuantity(buyingIndex-1, buyingQuantity);
+                    towns[nextTown].merchantStock[buyingIndex-1].setQuantity(towns[nextTown].merchantStock[buyingIndex-1].getQuantity() - buyingQuantity);
+
+                    JOptionPane.showMessageDialog(null, "You have purchased " + buyingQuantity + " " + towns[nextTown].merchantStock[buyingIndex-1].getName() + " for " + towns[nextTown].merchantStock[buyingIndex-1].getMerchantBuyPrice() * buyingQuantity + " doubloons", "Transaction Successful", JOptionPane.INFORMATION_MESSAGE);
+                    valid2 = 'v';
+                }
+            }while(valid2 == 'd');
+
+            enterTrader();
         }
 
         private static void sellingGoods()
         {
+            char valid = 'd', valid2 = 'd';
+            int sellingIndex;
 
+            do {
+                sellingIndex = Integer.parseInt(JOptionPane.showInputDialog("Input the item you would like to sell: \n1.Food Rations\n2.Timber\n3.Rum Barrels\n4.Fabric\n5.Guns\n6.Black Powder Keg\n7.Coffee Beans\n8.Tea Leaves"
+                        + "\n9.Canons\n10.Canon Balls\n11.Silk\n12.Opium\n13.Tobacco\n14.Lemons\n\n15.Go Back"));
+
+                if(sellingIndex > 0 && sellingIndex < 15)
+                {
+                    valid = 'v';
+                }
+                else
+                {
+                    JOptionPane.showMessageDialog(null,"Please enter a valid option!","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid = 'd';
+                }
+            }while(valid == 'd');
+
+            do {
+                int sellingQuantity = Integer.parseInt(JOptionPane.showInputDialog("How many " + towns[nextTown].merchantStock[sellingIndex-1].getName() + " would you like to sell?"));
+
+                if(sellingQuantity > GameManager.playerCrew.cargo[sellingIndex-1].getQuantity())
+                {
+                    JOptionPane.showMessageDialog(null,"You do not have enough " + towns[nextTown].merchantStock[sellingIndex-1].getName() + " to sell to the merchant! Please input a different quantity.","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid2 = 'd';
+                }
+                else if(sellingQuantity <= 0)
+                {
+                    JOptionPane.showMessageDialog(null,"Quantity must be a positive number, please enter a different quantity","Invalid selection!",JOptionPane.ERROR_MESSAGE);
+                    valid2 = 'd';
+                }
+                else
+                {
+                    GameManager.playerCrew.setMoney(GameManager.playerCrew.getMoney() + towns[nextTown].merchantStock[sellingIndex-1].getMerchantBuyPrice() * sellingQuantity);
+                    GameManager.playerCrew.alterCargoQuantity(sellingIndex-1, -sellingQuantity);
+                    towns[nextTown].merchantStock[sellingIndex-1].setQuantity(towns[nextTown].merchantStock[sellingIndex-1].getQuantity() + sellingQuantity);
+
+                    JOptionPane.showMessageDialog(null, "You have sold " + sellingQuantity + " " + towns[nextTown].merchantStock[sellingIndex-1].getName() + " for " + towns[nextTown].merchantStock[sellingIndex-1].getMerchantBuyPrice() * sellingQuantity + " doubloons", "Transaction Successful", JOptionPane.INFORMATION_MESSAGE);
+                    valid2 = 'v';
+                }
+            }while(valid2 == 'd');
+
+            enterTrader();
+        }
+
+        private static void displayRates()
+        {
+            JTextArea jta = new JTextArea(towns[nextTown].merchantStockAsString(buyingOrSelling));
+            JOptionPane.showMessageDialog(null, jta, "Merchant Stock", JOptionPane.PLAIN_MESSAGE);
+            enterTrader();
         }
 
 

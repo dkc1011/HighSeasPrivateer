@@ -10,6 +10,7 @@ public class GameManager {
     private static int minMovespeed=2;
     private static int maxMovespeed=4;
     private static int dayCycle = 0;
+    private static int hungerCounter = 0;
     public static void main(String[] args) {
         //d for default
         char choice = 'd';
@@ -110,6 +111,31 @@ public class GameManager {
                     {
                         minMovespeed = 1;
                         maxMovespeed = 2;
+                    }
+                    else if(dayCycle == 3)
+                    {
+                        //Crew eats food in evening
+                        if(playerCrew.cargo[0].getQuantity() >= playerCrew.crew.length)
+                        {
+                            playerCrew.alterCargoQuantity(0, -playerCrew.crew.length);
+                            System.out.println("The Crew consumes " + playerCrew.crew.length + " Food rations");
+                            hungerCounter = 0;
+                        }
+                        else
+                        {
+                            System.out.println("There were not enough rations to feed the crew today");
+                            playerCrew.cargo[0].setQuantity(0);
+                            hungerCounter++;
+
+                            if(hungerCounter >= 3)
+                            {
+                                for(int i = 0; i<playerCrew.crew.length; i++)
+                                {
+                                    playerCrew.crew[i].setHealth(playerCrew.crew[i].getHealth()-1);
+                                    System.out.println(playerCrew.crew[i].getName() + " is starving.");
+                                }
+                            }
+                        }
                     }
                     else
                     {

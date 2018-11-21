@@ -48,6 +48,10 @@ public class CrewMember {
         return this.health;
     }//End getHealth()
 
+    public char getStatus() {
+        return status;
+    }
+
     //Constructors
 
     //No Args Constructor

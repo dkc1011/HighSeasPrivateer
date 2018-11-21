@@ -1,8 +1,11 @@
 //GameManager.java by Daragh Carroll t00201097
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.image.BufferedImage;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.awt.*;
 
 public class GameManager {
     public static char difficulty = 'd';
@@ -101,6 +104,16 @@ public class GameManager {
 
             @Override
             public void run() {
+                for(int i = 0; i < playerCrew.crew.length; i++)
+                {
+                    if(playerCrew.crew[i].getHealth() == 0)
+                    {
+                        playerCrew.crew[i].setStatus('D');
+                        JOptionPane.showMessageDialog(null,playerCrew.crew[i].getName() + " has died!", "A Death has occurred!", JOptionPane.INFORMATION_MESSAGE);
+                        playerCrew.crew[i].setHealth(-1);
+                    }
+                }
+
                 if(EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() == 0)
                 {
                     EnterTown.enterTown(EnterTown.nextTown);
@@ -117,7 +130,7 @@ public class GameManager {
                         //Crew eats food in evening
                         if(playerCrew.cargo[0].getQuantity() >= playerCrew.crew.length)
                         {
-                            playerCrew.alterCargoQuantity(0, -playerCrew.crew.length);
+                            playerCrew.alterCargoQuantity(0, playerCrew.cargo[0].getQuantity()-playerCrew.crew.length);
                             System.out.println("The Crew consumes " + playerCrew.crew.length + " Food rations");
                             hungerCounter = 0;
                         }
@@ -131,8 +144,10 @@ public class GameManager {
                             {
                                 for(int i = 0; i<playerCrew.crew.length; i++)
                                 {
-                                    playerCrew.crew[i].setHealth(playerCrew.crew[i].getHealth()-1);
-                                    System.out.println(playerCrew.crew[i].getName() + " is starving.");
+                                    if(playerCrew.crew[i].getStatus() == 'H') {
+                                        playerCrew.crew[i].setHealth(playerCrew.crew[i].getHealth() - 1);
+                                        System.out.println(playerCrew.crew[i].getName() + " is starving.");
+                                    }
                                 }
                             }
                         }
@@ -167,7 +182,7 @@ public class GameManager {
 
                 }
             }
-        }, 3500, 3500);
+        }, 2500, 2500);
     }//End Travelling
     
 }

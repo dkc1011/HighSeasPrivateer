@@ -1,3 +1,5 @@
+//GUI.java by Daragh Carroll t00201097
+
 import javax.swing.*;
 import javax.swing.ImageIcon;
 import java.awt.*;

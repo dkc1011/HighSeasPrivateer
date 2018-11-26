@@ -3,7 +3,9 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.awt.*;
@@ -15,7 +17,8 @@ public class GameManager extends JPanel{
     private static int maxMovespeed=4;
     private static int dayCycle = 0;
     private static int hungerCounter = 0;
-    public static Image morning;
+    private static String fileName = "out.txt";
+    private static String difficultyString;
     public static void main(String[] args) {
         //d for default
         char choice = 'd';
@@ -61,14 +64,17 @@ public class GameManager extends JPanel{
                 if(difficulty == '1')
                 {
                     playerCrew.setMoney(300);
+                    difficultyString = "Easy";
                 }
                 else if(difficulty == '2')
                 {
                     playerCrew.setMoney(200);
+                    difficultyString = "Moderate";
                 }
                 else
                 {
                     playerCrew.setMoney(100);
+                    difficultyString = "Hard";
                 }
 
                 playerCrew.setDistanceTravelled(0);
@@ -120,24 +126,87 @@ public class GameManager extends JPanel{
             public void run() {
                 if(playerCrew.getLivingCrew() <= 0)
                 {
+                    int difficultyModifier=0;
+
+                    if(difficulty == '1')
+                    {
+                        difficultyModifier = 1;
+                    }
+                    else if(difficulty == '2')
+                    {
+                        difficultyModifier = 2;
+                    }
+                    else if(difficulty =='3')
+                    {
+                        difficultyModifier = 3;
+                    }
+
+                    int finalScore = difficultyModifier*(playerCrew.getMoney() + playerCrew.getDistanceTravelled());
                     JOptionPane.showMessageDialog(null,"The last of your crew falls, emaciated and sick, dead on the deck. \nYour ship floats aimlessly, unmanned. A ghostly remnant waiting to be swallowed by the waves.", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+
+                    try{
+                        PrintWriter outputStream = new PrintWriter(fileName);
+                        outputStream.println("Captain " + playerCrew.crew[0].getName() + ":\n" + finalScore);
+                        outputStream.close();
+                        System.out.println("Final score written to out.txt");
+                        JOptionPane.showMessageDialog(null, "GAME OVER\n\nYou completed the game with " + playerCrew.getMoney() + " doubloons and no remaining crew members.\n" +
+                                "You travelled " + playerCrew.getDistanceTravelled() + " Nautical Miles and your difficulty was " + difficultyString +".\n\nYour final score is: " + finalScore);
+
+                    } catch (FileNotFoundException e){
+                        e.printStackTrace();
+                        System.out.println("File not found");
+                    }
+
                     System.exit(0);
                 }
 
                 if(playerCrew.getShipHealth() <= 0)
                 {
+                    int difficultyModifier=0;
+                    if(difficulty == '1')
+                    {
+                        difficultyModifier = 1;
+                    }
+                    else if(difficulty == '2')
+                    {
+                        difficultyModifier = 2;
+                    }
+                    else if(difficulty =='3')
+                    {
+                        difficultyModifier = 3;
+                    }
+
+                    int finalScore = difficultyModifier*(playerCrew.getMoney()+playerCrew.getDistanceTravelled());
                     JOptionPane.showMessageDialog(null, "Your ship sustains far too much damage and sinks beneath the salty surf. Your crew lay to rest in a watery grave, forever trapped in davy jones' locker.", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+
+                    try{
+                        PrintWriter outputStream = new PrintWriter(fileName);
+                        outputStream.println("Captain " + playerCrew.crew[0].getName() + ":\n" + finalScore);
+                        outputStream.close();
+                        System.out.println("Final score written to out.txt");
+                        JOptionPane.showMessageDialog(null, "GAME OVER\n\nYou completed the game with " + playerCrew.getMoney() + " doubloons and no remaining crew members.\n" +
+                                "You travelled " + playerCrew.getDistanceTravelled() + " Nautical Miles and your difficulty was " + difficultyString +".\n\nYour final score is: " + finalScore);
+
+                    } catch (FileNotFoundException e){
+                        e.printStackTrace();
+                        System.out.println("File not found");
+                    }
+
                     System.exit(0);
                 }
 
                 for(int i = 0; i < playerCrew.crew.length; i++)
                 {
-                    if(playerCrew.crew[i].getHealth() == 0)
+                    if(playerCrew.crew[i].getHealth() <= 0)
                     {
+                        if(playerCrew.crew[i].getStatus() == 'H') {
+                            playerCrew.setLivingCrew(playerCrew.getLivingCrew() - 1);
+                            JOptionPane.showMessageDialog(null, playerCrew.crew[i].getName() + " has died!", "A Death has occurred!", JOptionPane.INFORMATION_MESSAGE);
+                        }
+
                         playerCrew.crew[i].setStatus('D');
-                        JOptionPane.showMessageDialog(null,playerCrew.crew[i].getName() + " has died!", "A Death has occurred!", JOptionPane.INFORMATION_MESSAGE);
-                        playerCrew.crew[i].setHealth(-1);
-                        playerCrew.setLivingCrew(playerCrew.getLivingCrew()-1);
+                        playerCrew.crew[i].setHealth(0);
+
                     }
                 }
 
@@ -148,12 +217,42 @@ public class GameManager extends JPanel{
                     }
                     else if(EnterTown.nextTown == 10)
                     {
-                        int finalScore = playerCrew.getMoney()*playerCrew.getLivingCrew();
+                        int difficultyModifier=0;
+                        if(difficulty == '1')
+                        {
+                            difficultyModifier = 1;
+                        }
+                        else if(difficulty == '2')
+                        {
+                            difficultyModifier = 2;
+                        }
+                        else if(difficulty =='3')
+                        {
+                            difficultyModifier = 3;
+                        }
+
+                        int finalScore = ((playerCrew.getMoney() + playerCrew.getDistanceTravelled())*playerCrew.getLivingCrew())*difficultyModifier;
                         JOptionPane.showMessageDialog(null, "You show your papers and cross through the safety of the Spanish blockade.\n"
                         + "As the line of Spanish ships fade into the horizon and you prepare to lay anchor in a new territory, having travelled " +
                         playerCrew.getDistanceTravelled() + " Nautical Miles, you let out a sigh of relief.");
 
-                        JOptionPane.showMessageDialog(null, "Congratulations!");
+                        //Information source https://www.youtube.com/watch?v=WEZRc0GoP3E
+
+                        try{
+                            PrintWriter outputStream = new PrintWriter(fileName);
+                            outputStream.println("Captain " + playerCrew.crew[0].getName() + ":\n" + finalScore);
+                            outputStream.close();
+                            System.out.println("Final score written to out.txt");
+
+                        } catch (FileNotFoundException e){
+                            e.printStackTrace();
+                            System.out.println("File not found");
+                        }
+
+                        JOptionPane.showMessageDialog(null, "Congratulations!\n\nYou completed the game with " + playerCrew.getMoney() + " doubloons and " + playerCrew.getLivingCrew() + " crew members left alive!\n" +
+                                "You travelled " + playerCrew.getDistanceTravelled() + "Nautical Miles and your difficulty was " + difficultyString +".\n\nYour final score is: \" + finalScore);\n\nYour final score is: " + finalScore);
+                        JOptionPane.showMessageDialog(null, "Thanks for playing!");
+                        System.exit(0);
                     }
                 }
                 else
@@ -221,5 +320,4 @@ public class GameManager extends JPanel{
             }
         }, 3000, 3000);
     }//End Travelling
-
 }

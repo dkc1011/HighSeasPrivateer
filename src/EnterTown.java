@@ -24,7 +24,7 @@ public class EnterTown {
 
             do {
                 option = JOptionPane.showInputDialog("You lay down your anchor at " + towns[townIndex].getTownName() + ". The docks are bustling with activity." +
-                        "\nWhat would you like to do? : \n1. Trade for goods\n2. Inspect your cargo\n3. Inspect your crew\n4. Leave").charAt(0);
+                        "\nWhat would you like to do? : \n1. Trade for goods\n2. Inspect your cargo\n3. Inspect your crew\n4. Seek ship repairs\n5. Leave").charAt(0);
 
                 if(option == '1')
                 {
@@ -39,11 +39,18 @@ public class EnterTown {
                 }
                 else if(option == '3')
                 {
-                    //CrewScreen
-                    System.out.println("Your Crew");
+                    JTextArea jta = new JTextArea();
+                    jta.setText(GameManager.playerCrew.inspectCrew());
+                    JOptionPane.showMessageDialog(null,jta);
                 }
-                else if (option == '4') {
+                else if(option == '4')
+                {
+                    shipRepairs(GameManager.playerCrew.getShipHealth());
+                }
+                else if (option == '5') {
                     nextTown++;
+                    GameManager.playerCrew.setDistanceTravelled(GameManager.playerCrew.getDistanceTravelled()+1);
+                    break;
                 }
                 else
                 {
@@ -266,7 +273,6 @@ public class EnterTown {
                         }while (choice2 == 'd');
 
                     case '3':
-                        enterTown(nextTown);
                         break;
 
                     default:
@@ -286,9 +292,13 @@ public class EnterTown {
                 buyingIndex = Integer.parseInt(JOptionPane.showInputDialog("Input the item you would like to buy: \n1.Food Rations\n2.Timber\n3.Rum Barrels\n4.Fabric\n5.Guns\n6.Black Powder Keg\n7.Coffee Beans\n8.Tea Leaves"
                         + "\n9.Canons\n10.Canon Balls\n11.Silk\n12.Opium\n13.Tobacco\n14.Lemons\n\n15.Go Back"));
 
-                if(buyingIndex > 0 && buyingIndex < 15)
+                if(buyingIndex > 0 && buyingIndex <15)
                 {
                     valid = 'v';
+                }
+                else if (buyingIndex==15)
+                {
+                    break;
                 }
                 else
                 {
@@ -318,7 +328,7 @@ public class EnterTown {
                 else
                 {
                     GameManager.playerCrew.setMoney(GameManager.playerCrew.getMoney() - towns[nextTown].merchantStock[buyingIndex-1].getMerchantBuyPrice() * buyingQuantity);
-                    GameManager.playerCrew.alterCargoQuantity(buyingIndex-1, buyingQuantity);
+                    GameManager.playerCrew.alterCargoQuantity(buyingIndex-1, GameManager.playerCrew.cargo[buyingIndex-1].getQuantity() + buyingQuantity);
                     towns[nextTown].merchantStock[buyingIndex-1].setQuantity(towns[nextTown].merchantStock[buyingIndex-1].getQuantity() - buyingQuantity);
 
                     JOptionPane.showMessageDialog(null, "You have purchased " + buyingQuantity + " " + towns[nextTown].merchantStock[buyingIndex-1].getName() + " for " + towns[nextTown].merchantStock[buyingIndex-1].getMerchantBuyPrice() * buyingQuantity + " doubloons", "Transaction Successful", JOptionPane.INFORMATION_MESSAGE);
@@ -341,6 +351,10 @@ public class EnterTown {
                 if(sellingIndex > 0 && sellingIndex < 15)
                 {
                     valid = 'v';
+                }
+                else if (sellingIndex==15)
+                {
+                    enterTown(nextTown);
                 }
                 else
                 {
@@ -365,7 +379,7 @@ public class EnterTown {
                 else
                 {
                     GameManager.playerCrew.setMoney(GameManager.playerCrew.getMoney() + towns[nextTown].merchantStock[sellingIndex-1].getMerchantBuyPrice() * sellingQuantity);
-                    GameManager.playerCrew.alterCargoQuantity(sellingIndex-1, -sellingQuantity);
+                    GameManager.playerCrew.alterCargoQuantity(sellingIndex-1, GameManager.playerCrew.cargo[sellingIndex-1].getQuantity() -sellingQuantity);
                     towns[nextTown].merchantStock[sellingIndex-1].setQuantity(towns[nextTown].merchantStock[sellingIndex-1].getQuantity() + sellingQuantity);
 
                     JOptionPane.showMessageDialog(null, "You have sold " + sellingQuantity + " " + towns[nextTown].merchantStock[sellingIndex-1].getName() + " for " + towns[nextTown].merchantStock[sellingIndex-1].getMerchantBuyPrice() * sellingQuantity + " doubloons", "Transaction Successful", JOptionPane.INFORMATION_MESSAGE);
@@ -381,6 +395,60 @@ public class EnterTown {
             JTextArea jta = new JTextArea(towns[nextTown].merchantStockAsString(buyingOrSelling));
             JOptionPane.showMessageDialog(null, jta, "Merchant Stock", JOptionPane.PLAIN_MESSAGE);
             enterTrader();
+        }
+
+        private static void shipRepairs(int shipHealth)
+        {
+            char choice = 'd';
+            int repairCost = 0;
+
+            if(shipHealth >= 1 && shipHealth <= 3)
+            {
+                repairCost = 150;
+            }
+            else if(shipHealth >= 4 && shipHealth <= 7)
+            {
+                repairCost = 100;
+            }
+            else if(shipHealth >= 8 && shipHealth <= 9)
+            {
+                repairCost = 50;
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(null,"Your ship is in pristine condition and is not in need of repair.");
+                choice = '2';
+            }
+
+            do {
+                choice = JOptionPane.showInputDialog("You traverse the shipyard until you find a capable carpentry outlet.\n The carpenter informs you that the ship will cost " + repairCost + " to repair.\n" +
+                        "\n1.Repair the ship\n2.Leave").charAt(0);
+
+                switch (choice)
+                {
+                    case '1':
+                        if(GameManager.playerCrew.getMoney() < repairCost)
+                        {
+                            JOptionPane.showMessageDialog(null,"You do not have enough money to repair your ship.","No Doubloons", JOptionPane.INFORMATION_MESSAGE);
+                            shipRepairs(GameManager.playerCrew.getShipHealth());
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null,"The carpenter repairs your ship to pristine condition. You pay him " + repairCost + " doubloons");
+                            GameManager.playerCrew.setShipHealth(10);
+                            enterTown(nextTown);
+                        }
+                        break;
+
+                    case '2':
+                        enterTown(nextTown);
+                        break;
+
+                    default:
+                        JOptionPane.showMessageDialog(null,"Please enter a valid choice!", "Error!", JOptionPane.ERROR_MESSAGE);
+                        choice = 'd';
+                }
+            }while(choice == 'd');
         }
 
 

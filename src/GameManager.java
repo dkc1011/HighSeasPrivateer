@@ -3,17 +3,19 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.awt.*;
 
-public class GameManager {
+public class GameManager extends JPanel{
     public static char difficulty = 'd';
     public static Crew playerCrew = new Crew();
     private static int minMovespeed=2;
     private static int maxMovespeed=4;
     private static int dayCycle = 0;
     private static int hungerCounter = 0;
+    public static Image morning;
     public static void main(String[] args) {
         //d for default
         char choice = 'd';
@@ -58,15 +60,15 @@ public class GameManager {
             
                 if(difficulty == '1')
                 {
-                    playerCrew.setMoney(400);
+                    playerCrew.setMoney(300);
                 }
                 else if(difficulty == '2')
                 {
-                    playerCrew.setMoney(300);
+                    playerCrew.setMoney(200);
                 }
                 else
                 {
-                    playerCrew.setMoney(200);
+                    playerCrew.setMoney(100);
                 }
 
                 playerCrew.setDistanceTravelled(0);
@@ -79,31 +81,55 @@ public class GameManager {
     private static void startGame()
     {
         EnterTown.generateTowns();
-        for(int i=0; i<9; i++) {
+        for(int i=0; i<EnterTown.towns.length; i++) {
             System.out.println(EnterTown.towns[i].getTownName());
             System.out.println(EnterTown.towns[i].getDistanceFromStart() + " Nautical Miles");
         }
+
+        JOptionPane.showMessageDialog(null,"Gambling debts. You were always a sucker for a game of liars dice. \nNow your habit may well be your downfall.\n" +
+                "The dread pirate Ashbeard now stalks your trail. \nYour last hope is to sail the " + EnterTown.towns[9].getDistanceFromStart() + " Nautical Miles to the Spanish blockade \nand into Spanish ruled territory where Ashbeard dare not follow you.\n" +
+        "\nGod speed sailor!");
+
         travelling();
     }
 
     //Information source for Timers -- : https://stackoverflow.com/questions/17397259/how-to-do-an-action-in-periodic-intervals-in-java
     public static void travelling()
     {
+        GUI gui = new GUI();
+        gui.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JTextArea jta = new JTextArea(15,55);
+        gui.add(jta);
+        gui.setVisible(true);
+
+
         // Day / Night cycle code
         String[] timeOfDayString = new String[5];
 
 
-        timeOfDayString[0] = "Morning";
-        timeOfDayString[1] = "Noon";
-        timeOfDayString[2] = "Afternoon";
-        timeOfDayString[3] = "Evening";
-        timeOfDayString[4] = "Night";
+        timeOfDayString[0] = "Morning\nTravelling";
+        timeOfDayString[1] = "Noon\nTravelling.";
+        timeOfDayString[2] = "Afternoon\nTravelling..";
+        timeOfDayString[3] = "Evening\nTravelling...";
+        timeOfDayString[4] = "Night\nTravelling....";
 
         Timer t = new Timer();
         t.schedule(new TimerTask() {
 
             @Override
             public void run() {
+                if(playerCrew.getLivingCrew() <= 0)
+                {
+                    JOptionPane.showMessageDialog(null,"The last of your crew falls, emaciated and sick, dead on the deck. \nYour ship floats aimlessly, unmanned. A ghostly remnant waiting to be swallowed by the waves.", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+
+                if(playerCrew.getShipHealth() <= 0)
+                {
+                    JOptionPane.showMessageDialog(null, "Your ship sustains far too much damage and sinks beneath the salty surf. Your crew lay to rest in a watery grave, forever trapped in davy jones' locker.", "GAME OVER", JOptionPane.INFORMATION_MESSAGE);
+                    System.exit(0);
+                }
+
                 for(int i = 0; i < playerCrew.crew.length; i++)
                 {
                     if(playerCrew.crew[i].getHealth() == 0)
@@ -111,15 +137,44 @@ public class GameManager {
                         playerCrew.crew[i].setStatus('D');
                         JOptionPane.showMessageDialog(null,playerCrew.crew[i].getName() + " has died!", "A Death has occurred!", JOptionPane.INFORMATION_MESSAGE);
                         playerCrew.crew[i].setHealth(-1);
+                        playerCrew.setLivingCrew(playerCrew.getLivingCrew()-1);
                     }
                 }
 
                 if(EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() == 0)
                 {
-                    EnterTown.enterTown(EnterTown.nextTown);
+                    if(EnterTown.nextTown <10) {
+                        EnterTown.enterTown(EnterTown.nextTown);
+                    }
+                    else if(EnterTown.nextTown == 10)
+                    {
+                        int finalScore = playerCrew.getMoney()*playerCrew.getLivingCrew();
+                        JOptionPane.showMessageDialog(null, "You show your papers and cross through the safety of the Spanish blockade.\n"
+                        + "As the line of Spanish ships fade into the horizon and you prepare to lay anchor in a new territory, having travelled " +
+                        playerCrew.getDistanceTravelled() + " Nautical Miles, you let out a sigh of relief.");
+
+                        JOptionPane.showMessageDialog(null, "Congratulations!");
+                    }
                 }
                 else
                 {
+                    playerCrew.setDistanceTravelled(playerCrew.getDistanceTravelled()+Event.randomIntegerGenerator(minMovespeed, maxMovespeed));
+                    jta.setText("Distance Travelled: " + playerCrew.getDistanceTravelled() + " Nautical Miles\n");
+                    EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(EnterTown.towns[EnterTown.nextTown].getDistanceFromStart() - playerCrew.getDistanceTravelled());
+                    if(EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() < 0)
+                    {
+                        EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(0);
+                    }
+
+
+
+                    jta.append("Distance to next town: " + EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() + " Nautical Miles\n");
+
+                    jta.append(timeOfDayString[dayCycle] + "\n\n");
+
+                    dayCycle++;
+
+                    Event.eventOccurs(Event.eventTrigger());
                     if(dayCycle == 4)
                     {
                         minMovespeed = 1;
@@ -128,15 +183,15 @@ public class GameManager {
                     else if(dayCycle == 3)
                     {
                         //Crew eats food in evening
-                        if(playerCrew.cargo[0].getQuantity() >= playerCrew.crew.length)
+                        if(playerCrew.cargo[0].getQuantity() >= playerCrew.getLivingCrew())
                         {
-                            playerCrew.alterCargoQuantity(0, playerCrew.cargo[0].getQuantity()-playerCrew.crew.length);
-                            System.out.println("The Crew consumes " + playerCrew.crew.length + " Food rations");
+                            playerCrew.alterCargoQuantity(0, playerCrew.cargo[0].getQuantity()-playerCrew.getLivingCrew());
+                            jta.append("The Crew consumes " + playerCrew.getLivingCrew() + " Food rations\n");
                             hungerCounter = 0;
                         }
                         else
                         {
-                            System.out.println("There were not enough rations to feed the crew today");
+                            jta.append("There were not enough rations to feed the crew today\n");
                             playerCrew.cargo[0].setQuantity(0);
                             hungerCounter++;
 
@@ -146,11 +201,15 @@ public class GameManager {
                                 {
                                     if(playerCrew.crew[i].getStatus() == 'H') {
                                         playerCrew.crew[i].setHealth(playerCrew.crew[i].getHealth() - 1);
-                                        System.out.println(playerCrew.crew[i].getName() + " is starving.");
+                                        jta.append(playerCrew.crew[i].getName() + " is starving.\n");
                                     }
                                 }
                             }
                         }
+                    }
+                    else if(dayCycle > 4)
+                    {
+                        dayCycle = 0;
                     }
                     else
                     {
@@ -158,31 +217,9 @@ public class GameManager {
                         maxMovespeed = 4;
                     }
 
-
-                    playerCrew.setDistanceTravelled(playerCrew.getDistanceTravelled()+Event.randomIntegerGenerator(minMovespeed, maxMovespeed));
-                    System.out.println("Distance Travelled: " + playerCrew.getDistanceTravelled() + " Nautical Miles");
-                    EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(EnterTown.towns[EnterTown.nextTown].getDistanceFromStart() - playerCrew.getDistanceTravelled());
-                    if(EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() < 0)
-                    {
-                        EnterTown.towns[EnterTown.nextTown].setDistanceFromPlayer(0);
-                    }
-
-                    System.out.println("Distance to next town: " + EnterTown.towns[EnterTown.nextTown].getDistanceFromPlayer() + " Nautical Miles");
-
-                    System.out.println(timeOfDayString[dayCycle] + "\n\n");
-
-                    dayCycle++;
-
-                    Event.eventOccurs(Event.eventTrigger());
-
-                    if(dayCycle > 4)
-                    {
-                        dayCycle = 0;
-                    }
-
                 }
             }
-        }, 2500, 2500);
+        }, 3000, 3000);
     }//End Travelling
-    
+
 }

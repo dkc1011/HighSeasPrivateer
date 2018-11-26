@@ -47,11 +47,21 @@ public class Town
 
     //Additional Methods
 
+    /**
+     *  This method allows me to quickly edit the quantity of a stock item using it's index in the merchantStock array. A similar method exists in Crew.
+     *
+     * @param stockIndex this parameter is the index of the needed stock item in the merchantStock[] array.
+     * @param newQuantity this parameter is the new quantity of the stock item./
+     */
     public void alterStockQuantity(int stockIndex, int newQuantity)
     {
         merchantStock[stockIndex].setQuantity(newQuantity);
     }
 
+    /**
+     *  This method populates the merchantStock array with names, indexes and base prices matching that of the
+     *  list of defined cargo in the Crew class.
+     */
     public void generateMerchantStockNamesAndBasePrices()
     {
         for (int i = 0; i < merchantStock.length; i++)
@@ -63,6 +73,11 @@ public class Town
         }
     }
 
+    /**
+     * This method randomly generates the amount of a certain trade good a merchant in each town will have.
+     * This generation is based off of the hard-coded base prices, meaning if an item is naturally cheaper then
+     * the merchant will naturally have more of it.
+     */
     public void generateMerchantQuantities()
     {
         for (int i = 0; i<merchantStock.length; i++)
@@ -95,6 +110,10 @@ public class Town
         }//End for
     }//End generateMerchantQuantities()
 
+    /**
+     * This method randomly generates the prices of each tradegood in each town. This random generation is based off of quantity, meaning that if
+     * a town has more of something, it will be sold for cheap and bought for cheap. If a town lacks something, it is sold and bought at a higher price.
+     */
     public void generateMerchantPrices()
     {
         for (int i = 0; i<merchantStock.length; i++)
@@ -143,6 +162,13 @@ public class Town
         }//End for
     }//End generateMerchantPrices()
 
+
+    /**
+     * This method returns the various prices of each trade good in a String.
+     *
+     * @param buyingOrSelling this parameter indicates whether the player has chose to see prices for buying goods or selling goods.
+     * @return the string StockSheet is returned. this is just a formatted string with the item name and price in a list.
+     */
     public String merchantStockAsString(char buyingOrSelling)
     {
         String stockSheet="~~~~~ Price List ~~~~~\n\n";
@@ -152,7 +178,6 @@ public class Town
             for (int i = 0; i < merchantStock.length; i++)
             {
                 stockSheet += "Item: " + merchantStock[i].getName() + "\n" +
-                        "Available Stock: " + merchantStock[i].getQuantity() + "\n" +
                         "Buy Price: " + merchantStock[i].getMerchantBuyPrice() + "\n\n";
             }
         }
@@ -161,7 +186,6 @@ public class Town
             for (int i = 0; i < merchantStock.length; i++)
             {
                 stockSheet += "Item: " + merchantStock[i].getName() + "\n" +
-                        "Available Stock: " + merchantStock[i].getQuantity() + "\n" +
                         "Sell Price: " + merchantStock[i].getMerchantSellPrice() + "\n\n";
             }
         }

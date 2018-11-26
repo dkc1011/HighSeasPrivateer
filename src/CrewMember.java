@@ -74,6 +74,8 @@ public class CrewMember {
 
     public String toString()
     {
-        return "Name: " + getName() + "\nHealth: " + getHealth();
+        String healthIndicator;
+
+        return "Name: " + getName() + "\nHealth: " + health + "\n\n";
     }//End toString
 }

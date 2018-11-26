@@ -1,12 +1,14 @@
 //Crew.java by Daragh Carroll t00201097
 
 import javax.swing.*;
+import java.awt.*;
 
 public class Crew {
     CrewMember[] crew = new CrewMember[5];
     private int money;
     private int shipHealth;
     private int distanceTravelled;
+    private int livingCrew;
     CargoItem[] cargo = new CargoItem[14];
 
     public void createCrew()
@@ -24,17 +26,17 @@ public class Crew {
             crewMember.setStatus('H');
             crew[i] = crewMember;
         } //End For
-
+        livingCrew = 5;
         //Initializes all of the different cargo a crew can have
         cargo[0] = new CargoItem("Food Rations", 0, 2, 0, 0);
-        cargo[1] = new CargoItem("Timber", 0, 20,0, 0);
+        cargo[1] = new CargoItem("Timber", 0, 8,0, 0);
         cargo[2] = new CargoItem("Rum", 0, 6,0, 0);
         cargo[3] = new CargoItem("Fabric", 0, 8,0, 0);
-        cargo[4] = new CargoItem("Guns", 0,19,0, 0);
+        cargo[4] = new CargoItem("Guns", 0,12,0, 0);
         cargo[5] = new CargoItem("Black Powder", 0,2,0, 0);
         cargo[6] = new CargoItem("Coffee Beans", 0, 3, 0, 0);
         cargo[7] = new CargoItem("Tea Leaves", 0, 3, 0, 0);
-        cargo[8] = new CargoItem("Canons", 0, 85, 0, 0);
+        cargo[8] = new CargoItem("Canons", 0, 55, 0, 0);
         cargo[9] = new CargoItem("Canon balls", 0, 18, 0, 0);
         cargo[10] = new CargoItem("Silk", 0, 15, 0, 0);
         cargo[11] = new CargoItem("Opium",0,30, 0, 0);
@@ -52,6 +54,10 @@ public class Crew {
     {
         this.money = money;
     }//End setMoney()
+
+    public void setLivingCrew(int livingCrew) {
+        this.livingCrew = livingCrew;
+    }
 
     public void setDistanceTravelled(int distanceTravelled) {
         this.distanceTravelled = distanceTravelled;
@@ -76,6 +82,10 @@ public class Crew {
 
     public int getDistanceTravelled() {
         return distanceTravelled;
+    }
+
+    public int getLivingCrew() {
+        return livingCrew;
     }
 
     //Constructors
@@ -107,6 +117,20 @@ public class Crew {
         }
 
         return cargoLedger;
+    }
+
+    public String inspectCrew()
+    {
+        String crewLedger = "";
+
+        for(int i = 0; i<crew.length; i++)
+        {
+            crewLedger += crew[i].toString();
+        }
+
+        crewLedger += "\nDoubloons: " + GameManager.playerCrew.money;
+
+        return crewLedger;
     }
 
 }//End class

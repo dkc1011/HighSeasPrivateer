@@ -6,27 +6,50 @@ public class Town
     private int distanceFromPlayer;
     public CargoItem[] merchantStock = new CargoItem[14];
 
-
+    /**
+     *
+     * @param townName the name of the town
+     */
     public void setTownName(String townName) {
         this.townName = townName;
     }
 
+    /**
+     *
+     * @param distanceFromStart how far the town is from the start point 0 of the game.
+     */
     public void setDistanceFromStart(int distanceFromStart) {
         this.distanceFromStart = distanceFromStart;
     }
 
+    /**
+     *
+     * @param distanceFromPlayer how far the town is from the player - Calculated by town distanceFromStart - playerDistanceTravelled
+     */
     public void setDistanceFromPlayer(int distanceFromPlayer) {
         this.distanceFromPlayer = distanceFromPlayer;
     }
 
+    /**
+     *
+     * @return the name of the town
+     */
     public String getTownName() {
         return townName;
     }
 
+    /**
+     *
+     * @return the distance the town is from the start of the game
+     */
     public int getDistanceFromStart() {
         return distanceFromStart;
     }
 
+    /**
+     *
+     * @return how far the town is from the player - Calculated by town distanceFromStart - playerDistanceTravelled
+     */
     public int getDistanceFromPlayer() {
         return distanceFromPlayer;
     }
